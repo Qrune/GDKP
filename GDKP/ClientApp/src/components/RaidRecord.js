@@ -1,6 +1,7 @@
 ﻿import React, { Component } from "react";
 import { RoutePaths } from "./RoutePaths";
 import { Container, Button, Modal, Form, Row, Col } from "react-bootstrap";
+import { DeleteRecordModal } from "./DeleteRecordModal";
 import { List, Statistic, Card } from "antd";
 import { Link, Redirect } from "react-router-dom";
 import "antd/dist/antd.css";
@@ -69,8 +70,8 @@ export class RaidRecord extends Component {
   handleRecordDeletePasswordChange(e) {
     this.setState({ recordDeletePassword: e.target.value });
   }
-    handleExpenseChange(e) {
-      this.setState({ isExpense: !this.state.isExpense});
+  handleExpenseChange(e) {
+    this.setState({ isExpense: !this.state.isExpense });
   }
   colorPrice(value) {
     if (parseInt(value) > 1000) {
@@ -363,7 +364,12 @@ export class RaidRecord extends Component {
             </Button>
           </Col>
         </Row>
-
+        <DeleteRecordModal
+          isModalShow={this.state.deleteModalVisible}
+          toggleModalVisible={this.toggleDeleteModal}
+          onModalSubmit={this.deleteRecord}
+          handlePasswordChange={this.handleRecordDeletePasswordChange}
+        />
         <Modal
           show={this.state.groupModalVisible}
           onHide={this.toggleGroupModal}
@@ -430,39 +436,6 @@ export class RaidRecord extends Component {
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={this.toggleGroupModal}>
-                Close
-              </Button>
-              <Button variant="primary" type="submit">
-                Submit
-              </Button>
-            </Modal.Footer>
-          </Form>
-        </Modal>
-        <Modal
-          show={this.state.deleteModalVisible}
-          onHide={this.toggleDeleteModal}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Input Password</Modal.Title>
-          </Modal.Header>
-          <Form onSubmit={this.deleteRecord}>
-            <Modal.Body>
-              <Form.Group as={Row} controlId="recordDeleteForm">
-                <Form.Label column sm="2">
-                  Password
-                </Form.Label>
-                <Col sm="10">
-                  <Form.Control
-                    type="password"
-                    onChange={e => this.handleRecordDeletePasswordChange(e)}
-                    name="password"
-                    placeholder="Enter Password"
-                  />
-                </Col>
-              </Form.Group>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={this.toggleDeleteModal}>
                 Close
               </Button>
               <Button variant="primary" type="submit">
