@@ -2,6 +2,8 @@
 import { RoutePaths } from "./RoutePaths";
 import { Container, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import { DeleteRecordModal } from "./DeleteRecordModal";
+import { GroupCalculateModal } from "./modals/GroupCalculateModal";
+import { WclLinkComponent } from "./WclLink";
 import { List, Statistic, Card } from "antd";
 import { Link, Redirect } from "react-router-dom";
 import "antd/dist/antd.css";
@@ -16,6 +18,7 @@ export class RaidRecord extends Component {
       buyerName: "",
       groupModalVisible: false,
       deleteModalVisible: false,
+      groupCalculateModalVisible: false,
       isExpense: false,
       comment: "",
       records: [],
@@ -26,20 +29,28 @@ export class RaidRecord extends Component {
       recordToDelete: "",
       groupPassword: "",
       recordDeletePassword: "",
+      wclLink: "",
       loading: true
     };
     this.handleAddNewRecord = this.handleAddNewRecord.bind(this);
+    this.handleWclLinkChange = this.handleWclLinkChange.bind(this);
+    this.handleRecordDeletePasswordChange = this.handleRecordDeletePasswordChange.bind(
+      this
+    );
     this.toggleGroupModal = this.toggleGroupModal.bind(this);
     this.ComputeTax = this.ComputeTax.bind(this);
     this.ComputeDps = this.ComputeDps.bind(this);
     this.ComputeSubsidy = this.ComputeSubsidy.bind(this);
     this.modifyGroupDetail = this.modifyGroupDetail.bind(this);
     this.toggleDeleteModal = this.toggleDeleteModal.bind(this);
+    this.toggleGroupCalculateModal = this.toggleGroupCalculateModal.bind(this);
     this.raiseDeleteModal = this.raiseDeleteModal.bind(this);
     this.deleteRecord = this.deleteRecord.bind(this);
     this.colorPrice = this.colorPrice.bind(this);
   }
-
+  handleWclLinkChange(e) {
+    this.setState({ wclLink: e.target.value });
+  }
   handleItemNameChange(e) {
     this.setState({ itemName: e.target.value });
   }
@@ -176,6 +187,12 @@ export class RaidRecord extends Component {
       deleteModalVisible
     });
   }
+  toggleGroupCalculateModal() {
+    const groupCalculateModalVisible = !this.state.groupCalculateModalVisible;
+    this.setState({
+      groupCalculateModalVisible
+    });
+  }
   raiseDeleteModal(id) {
     this.state.recordToDelete = id;
     const deleteModalVisible = !this.state.deleteModalVisible;
@@ -192,8 +209,7 @@ export class RaidRecord extends Component {
         "Content-Type": "application/x-www-form-urlencoded"
       },
       body: "password=" + this.state.recordDeletePassword
-    });
-    window.location.reload(false);
+    }).then(window.location.reload(false));
   }
   async modifyGroupDetail(event) {
     event.preventDefault();
@@ -212,8 +228,7 @@ export class RaidRecord extends Component {
         this.state.groupTax +
         "&password=" +
         this.state.groupPassword
-    });
-    window.location.reload(false);
+    }).then(window.location.reload(false));
   }
   renderRecordsTable(records) {
     return (
@@ -357,18 +372,44 @@ export class RaidRecord extends Component {
             </Col>
           </Row>
         </Container>
+        <Form className="mh-10">
+          <Form.Row>
+            <Form.Group as={Col} md="11" controlId="wclLinkForm">
+              <Form.Label>WCL 链接</Form.Label>
+              <Form.Control type="text" value="text link" />
+            </Form.Group>
+            <Form.Group as={Col} md="1" controlId="wclLinkForm">
+              <Button type="submit">Update Link</Button>
+            </Form.Group>
+          </Form.Row>
+        </Form>
         <Row>
-          <Col sm="2" className="ml-3 mb-5">
-            <Button onClick={this.toggleGroupModal} variant="primary">
-              Group Setting
-            </Button>
-          </Col>
+          <Button
+            className="ml-3 mb-5"
+            onClick={this.toggleGroupModal}
+            variant="primary"
+          >
+            团队设定
+          </Button>
+          <Button
+            className="ml-3 mb-5"
+            onClick={this.toggleGroupCalculateModal}
+            variant="secondary"
+          >
+            分赃计算器
+          </Button>
         </Row>
         <DeleteRecordModal
           isModalShow={this.state.deleteModalVisible}
           toggleModalVisible={this.toggleDeleteModal}
           onModalSubmit={this.deleteRecord}
           handlePasswordChange={this.handleRecordDeletePasswordChange}
+        />
+        <GroupCalculateModal
+          isModalShow={this.state.groupCalculateModalVisible}
+          toggleModalVisible={this.toggleGroupCalculateModal}
+          dpsWage={this.ComputeDps()}
+          residyWage={this.ComputeSubsidy()}
         />
         <Modal
           show={this.state.groupModalVisible}

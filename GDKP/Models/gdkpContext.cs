@@ -73,13 +73,14 @@ namespace GDKP.Models
                     .IsRequired()
                     .HasColumnName("raidName")
                     .HasMaxLength(255);
-                    
 
                 entity.Property(e => e.RaidPeople).HasColumnName("raidPeople");
 
                 entity.Property(e => e.RaidSubsidyPeople).HasColumnName("raidSubsidyPeople");
 
                 entity.Property(e => e.RaidTax).HasColumnName("raidTax");
+
+                entity.Property(e => e.RaidWcl).HasColumnName("raidWcl");
             });
 
             modelBuilder.Entity<Records>(entity =>
@@ -91,7 +92,8 @@ namespace GDKP.Models
                 entity.Property(e => e.Amount).HasColumnName("amount");
 
                 entity.Property(e => e.Comment)
-                    .HasColumnName("comment");
+                    .HasColumnName("comment")
+                    .IsUnicode(false);
 
                 entity.Property(e => e.ItemId).HasColumnName("itemID");
 

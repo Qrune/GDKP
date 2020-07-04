@@ -16,6 +16,7 @@ namespace GDKP.Models
         public int? RaidPeople { get; set; }
         public int? RaidSubsidyPeople { get; set; }
         public int? RaidTax { get; set; }
+        public string RaidWcl { get; set; }
 
         public virtual ICollection<Records> Records { get; set; }
     }
