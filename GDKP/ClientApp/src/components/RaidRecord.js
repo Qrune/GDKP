@@ -3,7 +3,6 @@ import { RoutePaths } from "./RoutePaths";
 import { Container, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import { DeleteRecordModal } from "./DeleteRecordModal";
 import { GroupCalculateModal } from "./modals/GroupCalculateModal";
-import { WclLinkComponent } from "./WclLink";
 import { List, Statistic, Card } from "antd";
 import { Link, Redirect } from "react-router-dom";
 import "antd/dist/antd.css";
@@ -228,8 +227,28 @@ export class RaidRecord extends Component {
         this.state.groupTax +
         "&password=" +
         this.state.groupPassword
-    }).then(window.location.reload(false));
-  }
+    }).then((response) => {
+        console.log(response.status);
+        if (response.status == 200) {
+            window.location.reload(false)
+        }
+        
+    }
+    );
+    }
+    async modifyWclLink(event) {
+        event.preventDefault();
+        await fetch("/raids/" + this.state.raidId + "/updateWcl/", {
+            method: "PUT",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body:
+                "wclLink=" +
+            this.state.wclLink
+        }).then(window.location.reload(false));
+    }
   renderRecordsTable(records) {
     return (
       <>
@@ -374,13 +393,20 @@ export class RaidRecord extends Component {
         </Container>
         <Form className="mh-10">
           <Form.Row>
-            <Form.Group as={Col} md="11" controlId="wclLinkForm">
+            <Form.Group as={Col} md="10" controlId="wclLinkForm">
               <Form.Label>WCL 链接</Form.Label>
-              <Form.Control type="text" value="text link" />
-            </Form.Group>
+                        <Form.Control
+                            type="text"
+                            value={this.state.wclLink}
+                            onChange={e => this.handleWclLinkChange(e)}/>
+                    </Form.Group>
+                    <Form.Group as={Col} md="1" controlId="wclLinkForm">
+                        <Button  href={this.state.wclLink} target="_blank">Goto Page</Button>
+                    </Form.Group>
             <Form.Group as={Col} md="1" controlId="wclLinkForm">
-              <Button type="submit">Update Link</Button>
-            </Form.Group>
+                        <Button variant="danger" type="submit">Update Link</Button>
+                    </Form.Group>
+                   
           </Form.Row>
         </Form>
         <Row>
@@ -488,7 +514,6 @@ export class RaidRecord extends Component {
       </>
     );
   }
-
   render() {
     let contents = this.state.loading ? (
       <p>
@@ -516,7 +541,8 @@ export class RaidRecord extends Component {
     this.setState({
       groupPeople: groupData.raidPeople,
       groupSubsidyPeople: groupData.raidSubsidyPeople,
-      groupTax: groupData.raidTax
+        groupTax: groupData.raidTax,
+      wclLink: groupData.raidWcl
     });
   }
 }
